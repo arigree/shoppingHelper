@@ -35,7 +35,7 @@ nav {
     justify-content: center;
     align-items: center;
     .logo{
-      background-image: url("../public/images/logo.png");
+      background-image: url("../dist/images/logo.png");
       background-position: center;
       background-repeat: no-repeat;
       background-size: contain;
