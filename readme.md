@@ -6,6 +6,8 @@ Sustainable Shopping Helper is a web application built with **Vite**, **Firebase
 
 This project includes user authentication, profile management, dynamic product exploration, and is fully deployed on Firebase Hosting.
 
+**[Visit Site](https://shoppinghelper-989b4.web.app/)**
+
 ## 🚀 Features
 
 **🔍 Smart Product Search**
