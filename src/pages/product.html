@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Product — Sustainable Shopping</title>
+    <link rel="stylesheet" href="/src/style.css" />
+    <style>
+      /* Page-specific styles */
+      .product-page {
+        max-width: 1100px;
+        margin: 28px auto;
+        padding: 12px;
+      }
+
+      .product-top {
+        display: grid;
+        grid-template-columns: 360px 1fr 320px;
+        gap: 28px;
+        align-items: start;
+      }
+
+      .product-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 18px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+      }
+
+      .product-image {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 320px;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      .product-image img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        border-radius: 8px;
+      }
+
+      .product-info h1 {
+        margin: 0 0 8px;
+        font-size: 26px;
+      }
+      .product-info p.lead {
+        color: var(--muted);
+        margin-top: 0;
+        margin-bottom: 12px;
+      }
+
+      .add-btn {
+        display: inline-block;
+        width: 100%;
+        padding: 12px 16px;
+        background: var(--signup);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-weight: 700;
+        cursor: pointer;
+        margin-top: 8px;
+      }
+
+      .nutrition-title {
+        margin-top: 6px;
+        margin-bottom: 8px;
+        font-weight: 700;
+      }
+      .nutrition-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 6px;
+      }
+      .nutrition-table td {
+        padding: 10px 8px;
+        background: #f6f8f6;
+        border-radius: 8px;
+      }
+      .nutrition-row + .nutrition-row {
+        margin-top: 8px;
+      }
+
+      .env-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      .env-card {
+        border-radius: 10px;
+        padding: 12px;
+        background: #f0f0f0;
+        text-align: center;
+      }
+      .env-card h4 {
+        margin: 6px 0;
+      }
+      .env-status {
+        font-weight: 700;
+        margin-top: 6px;
+      }
+
+      .compare {
+        margin-top: 20px;
+      }
+      .compare table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .compare th,
+      .compare td {
+        padding: 10px 12px;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+      }
+      .compare tr.highlight {
+        background: #f2fff2;
+      } /* highlight sustainable row */
+
+      @media (max-width: 1000px) {
+        .product-top {
+          grid-template-columns: 1fr;
+        }
+        .product-page {
+          padding: 8px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="container site-header">
+      <div class="brand">
+        <img class="logo" src="/images/logo.png" alt="Logo" />
+        <div style="font-weight: 700">Sustainable Shopping Helper</div>
+      </div>
+      <nav class="header-actions">
+        <a
+          class="pill"
+          href="/"
+          style="
+            background: transparent;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            color: #333;
+          "
+          >Home</a
+        >
+
+        <a
+          class="pill"
+          href="/src/pages/shopping-list.html"
+          style="
+            background: transparent;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            color: #333;
+          "
+          >My List</a
+        >
+        <a
+          class="pill"
+          href="/src/pages/profile.html"
+          style="
+            background: transparent;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            color: #333;
+          "
+          >Profile</a
+        >
+
+        <button
+          id="logoutBtnHeader"
+          class="pill"
+          style="
+            background: transparent;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            color: #333;
+          "
+        >
+          Logout
+        </button>
+      </nav>
+    </header>
+
+    <main class="product-page">
+      <div id="status" style="color: var(--muted); margin-bottom: 12px">
+        Loading product...
+      </div>
+
+      <div class="product-top">
+        <div class="product-card">
+          <div id="imageWrap" class="product-image">
+            <div style="color: #999">No image</div>
+          </div>
+        </div>
+
+        <div>
+          <div class="product-card product-info">
+            <h1 id="title">Loading...</h1>
+            <div id="subtitle" class="lead"></div>
+
+            <div class="nutrition-block">
+              <div class="nutrition-title">Nutrition Facts</div>
+              <div id="nutritionRows">
+                <!-- rows inserted here -->
+              </div>
+            </div>
+          </div>
+
+          <div class="product-card compare" id="compareCard">
+            <h3 style="margin-top: 0">Compare Alternatives</h3>
+            <div
+              id="compareNote"
+              style="color: var(--muted); font-size: 13px; margin-bottom: 10px"
+            ></div>
+            <div id="compareArea">
+              <!-- table inserted here -->
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="product-card">
+            <h3 style="margin-top: 0">Environmental Impact</h3>
+            <div class="env-grid">
+              <div class="env-card">
+                <div style="font-size: 14px; color: var(--muted)">
+                  Carbon Footprint
+                </div>
+                <div id="carbonStatus" class="env-status">—</div>
+                <div
+                  id="carbonDesc"
+                  style="color: var(--muted); margin-top: 8px; font-size: 13px"
+                ></div>
+              </div>
+
+              <div class="env-card">
+                <div style="font-size: 14px; color: var(--muted)">
+                  Water Usage
+                </div>
+                <div id="waterStatus" class="env-status">—</div>
+                <div
+                  id="waterDesc"
+                  style="color: var(--muted); margin-top: 8px; font-size: 13px"
+                ></div>
+              </div>
+
+              <div class="env-card">
+                <div style="font-size: 14px; color: var(--muted)">
+                  Packaging
+                </div>
+                <div id="packStatus" class="env-status">—</div>
+                <div
+                  id="packDesc"
+                  style="color: var(--muted); margin-top: 8px; font-size: 13px"
+                ></div>
+              </div>
+
+              <button id="addBtn" class="add-btn" style="display: none">
+                Add to list
+              </button>
+              <div
+                id="authHint"
+                style="color: var(--muted); font-size: 13px; margin-top: 8px"
+              >
+                Sign in to save this item
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="site-footer container" style="margin-top: 28px">
+      <div>About Us &nbsp;&nbsp; • &nbsp;&nbsp; Contact</div>
+      <div style="margin-top: 10px; color: var(--footer-gray)">
+        &copy; 2025 Sustainable Shopping Helper. All rights reserved.
+      </div>
+    </footer>
+
+    <script type="module">
+      import {
+        getProductByBarcode,
+        getRandomProductsForCategory,
+      } from "/src/openFoodFactsApi.js";
+      import { addProductToList } from "/src/firestoreHelpers.js";
+      import { auth } from "/src/firebase.js";
+      import { onAuthChange, logout } from "/src/authHelpers.js";
+
+      // helpers to read query param
+      function q(name) {
+        const u = new URL(location.href);
+        return u.searchParams.get(name);
+      }
+
+      function el(id) {
+        return document.getElementById(id);
+      }
+
+      function safeText(s) {
+        return s ? String(s) : "";
+      }
+
+      function humanNumber(v) {
+        if (v == null || v === "") return "-";
+        const n = Number(v);
+        if (!isFinite(n)) return String(v);
+        return (Math.round(n * 100) / 100).toString();
+      }
+
+      function carbonLabelFromEcoscore(ecoscore) {
+        if (!ecoscore) return { label: "Unknown", desc: "No data available" };
+        const c = String(ecoscore).toUpperCase();
+        if (c === "A" || c === "B")
+          return {
+            label: "Low",
+            desc: "Lower carbon impact compared to average.",
+          };
+        if (c === "C")
+          return { label: "Moderate", desc: "Average carbon footprint." };
+        return {
+          label: "High",
+          desc: "Higher carbon footprint; consider alternatives.",
+        };
+      }
+      function waterLabelFromCategory(categories) {
+        const cats = (categories || []).join(" ").toLowerCase();
+        if (!cats) return { label: "Unknown", desc: "No data available" };
+        if (cats.includes("meat") || cats.includes("dairy"))
+          return {
+            label: "High",
+            desc: "High water usage compared to plant foods.",
+          };
+        if (cats.includes("beverages") || cats.includes("snacks"))
+          return { label: "Moderate", desc: "Moderate water usage" };
+        return {
+          label: "Low",
+          desc: "Lower water usage (typical for fruits and veggies).",
+        };
+      }
+      function packagingLabelFromFields(packaging) {
+        // look for keywords
+        if (!packaging)
+          return { label: "Unknown", desc: "Packaging data not available." };
+        const p = packaging.toLowerCase();
+        if (
+          p.includes("recycl") ||
+          p.includes("cardboard") ||
+          p.includes("paper")
+        )
+          return {
+            label: "Sustainable",
+            desc: "Recyclable / paper-based packaging.",
+          };
+        if (p.includes("plastic"))
+          return {
+            label: "Moderate",
+            desc: "Plastic packaging; recycling availability varies.",
+          };
+        return { label: "Moderate", desc: "Packaging information available." };
+      }
+
+      // render nutrition rows
+      function addNutritionRow(container, label, value) {
+        const row = document.createElement("div");
+        row.style.display = "flex";
+        row.style.justifyContent = "space-between";
+        row.style.alignItems = "center";
+        row.style.margin = "6px 0";
+        row.innerHTML = `<div style="color:var(--muted)">${label}</div><div style="font-weight:700">${humanNumber(
+          value
+        )}</div>`;
+        container.appendChild(row);
+      }
+
+      // compare alternatives table
+      function renderCompareTable(container, products, productTitle) {
+        if (!products || products.length === 0) {
+          container.innerHTML = `<div style="color:var(--muted)">No alternatives found.</div>`;
+          return;
+        }
+        // table header
+        const tbl = document.createElement("table");
+        tbl.style.width = "100%";
+        tbl.innerHTML = `
+          <thead>
+            <tr><th>Product</th><th>Nutrition</th><th>Sustainability</th></tr>
+          </thead>
+        `;
+        const tbody = document.createElement("tbody");
+        products.forEach((p) => {
+          const tr = document.createElement("tr");
+          // nutrition summary — try to detect high/low sugar/fat roughly
+          const nutr = p.nutriments || {};
+          const sugar = Number(nutr.sugars_100g || nutr.sugars || 0);
+          const fat = Number(nutr.fat_100g || nutr.fat || 0);
+          const nutritionLabel =
+            sugar > 10 ? "High Sugar" : fat > 10 ? "High Fat" : "Low/Moderate";
+          // sustainability from ecoscore
+          const eco = (p.ecoscore_grade || "").toUpperCase();
+          const sustainability =
+            eco === "A" || eco === "B"
+              ? "Low Carbon"
+              : eco === "C"
+              ? "Moderate"
+              : "Higher Carbon";
+
+          tr.innerHTML = `
+            <td style="vertical-align:middle; padding:10px;">
+              <div style="display:flex; gap:10px; align-items:center;">
+                <img src="${
+                  p.image_front_small_url ||
+                  p.image_front_url ||
+                  p.image_url ||
+                  "/images/logo.png"
+                }" alt="" style="height:48px; width:48px; object-fit:cover; border-radius:6px;">
+                <div style="font-weight:700">${
+                  p.product_name || p.generic_name || "No name"
+                }</div>
+              </div>
+            </td>
+            <td>${nutritionLabel}</td>
+            <td>${sustainability}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+        tbl.appendChild(tbody);
+        container.innerHTML = "";
+        container.appendChild(tbl);
+      }
+
+      // main flow
+      (async function main() {
+        const code = q("code");
+        if (!code) {
+          el("status").textContent = "No product selected.";
+          return;
+        }
+        try {
+          el("status").textContent = "Loading product...";
+          const p = await getProductByBarcode(code);
+          if (!p) {
+            el("status").textContent = "Product not found.";
+            return;
+          }
+          el("status").textContent = "";
+
+          // image
+          const img =
+            p.image_front_url || p.image_front_small_url || p.image_url || "";
+          el("imageWrap").innerHTML = img
+            ? `<img src="${img}" alt="${(p.product_name || "").replace(
+                /"/g,
+                ""
+              )}" />`
+            : '<div style="color:#999">No image</div>';
+
+          // title & subtitle
+          el("title").textContent =
+            p.product_name || p.generic_name || "No title";
+          el("subtitle").textContent = p.brands ? `Brand: ${p.brands}` : "";
+
+          // Nutrition: pick common fields (per 100g or per serving)
+          const nutr = p.nutriments || {};
+          const nutContainer = el("nutritionRows");
+          nutContainer.innerHTML = "";
+          addNutritionRow(
+            nutContainer,
+            "Calories (kcal)",
+            nutr["energy-kcal_100g"] || nutr["energy-kcal"] || nutr["energy"]
+          );
+          addNutritionRow(
+            nutContainer,
+            "Total Fat (g)",
+            nutr["fat_100g"] || nutr["fat"]
+          );
+          addNutritionRow(
+            nutContainer,
+            "Saturates (g)",
+            nutr["saturated-fat_100g"] || nutr["saturated-fat"]
+          );
+          addNutritionRow(
+            nutContainer,
+            "Carbohydrates (g)",
+            nutr["carbohydrates_100g"] || nutr["carbohydrates"]
+          );
+          addNutritionRow(
+            nutContainer,
+            "Sugars (g)",
+            nutr["sugars_100g"] || nutr["sugars"]
+          );
+          addNutritionRow(
+            nutContainer,
+            "Protein (g)",
+            nutr["proteins_100g"] || nutr["proteins"]
+          );
+
+          const ecoscore = (p.ecoscore_grade || "").toUpperCase();
+          const categories = (p.categories_tags || []).map((t) =>
+            t.replace("en:", "").replace(/-/g, " ")
+          );
+          const carbon = carbonLabelFromEcoscore(ecoscore);
+          const water = waterLabelFromCategory(categories);
+          const pack = packagingLabelFromFields(
+            p.packaging ||
+              p.packaging_text ||
+              (p.packaging_tags && p.packaging_tags.join(" "))
+          );
+
+          el("carbonStatus").textContent = carbon.label;
+          el("carbonDesc").textContent = carbon.desc;
+          el("waterStatus").textContent = water.label;
+          el("waterDesc").textContent = water.desc;
+          el("packStatus").textContent = pack.label;
+          el("packDesc").textContent = pack.desc;
+
+          // Compare alternatives (try to use category if available)
+          const mainCategory =
+            p.categories_tags && p.categories_tags[0]
+              ? p.categories_tags[0].replace("en:", "")
+              : null;
+          const catName = mainCategory
+            ? mainCategory.replace(/-/g, " ")
+            : "snacks";
+          el("compareNote").textContent = mainCategory
+            ? `Alternatives in ${catName}`
+            : "Similar products";
+          const alts = await getRandomProductsForCategory(catName, 4, 80);
+          renderCompareTable(el("compareArea"), alts, p.product_name);
+
+          // Add-to-list button behavior and auth gating
+          el("addBtn").addEventListener("click", async () => {
+            const user = auth.currentUser;
+            if (!user) {
+              window.location.href = "/src/pages/login.html";
+              return;
+            }
+            try {
+              await addProductToList(user.uid, {
+                code: p.code,
+                product_name: p.product_name,
+                brands: p.brands,
+                image: img,
+                ecoscore: p.ecoscore_grade || p.ecoscore_score,
+                nutriments: nutr,
+              });
+              el("addBtn").textContent = "Added ✓";
+              el("addBtn").disabled = true;
+              setTimeout(() => {
+                el("addBtn").textContent = "Add to list";
+                el("addBtn").disabled = false;
+              }, 1400);
+            } catch (err) {
+              console.error(err);
+              alert("Failed to add item: " + (err.message || err));
+            }
+          });
+
+          // show/hide add button based on auth
+          onAuthChange((user) => {
+            if (user) {
+              el("addBtn").style.display = "block";
+              el("authHint").style.display = "none";
+            } else {
+              el("addBtn").style.display = "none";
+              el("authHint").style.display = "block";
+            }
+          });
+        } catch (err) {
+          console.error(err);
+          el("status").textContent = "Error loading product.";
+        }
+      })();
+      logoutBtnHeader?.addEventListener("click", async () => {
+        try {
+          await logout();
+          // after logout the onAuthChange listener will revert the UI
+        } catch (err) {
+          console.error("Logout failed", err);
+        }
+      });
+    </script>
+  </body>
+</html>

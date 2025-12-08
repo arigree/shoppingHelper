@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Profile — Sustainable Shopping</title>
+    <link rel="stylesheet" href="/src/style.css" />
+    <style>
+      .profile-page {
+        max-width: 900px;
+        margin: 28px auto;
+        padding: 12px;
+      }
+      .profile-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 22px;
+        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+      }
+      .profile-top {
+        display: flex;
+        gap: 28px;
+        align-items: flex-start;
+      }
+      .avatar-wrap {
+        width: 160px;
+      }
+      .avatar {
+        width: 160px;
+        height: 160px;
+        border-radius: 12px;
+        background: #f0f0f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+      }
+      .avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .meta {
+        flex: 1;
+      }
+      .meta h2 {
+        margin: 0 0 6px;
+        font-size: 20px;
+      }
+      .field {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        margin: 10px 0;
+      }
+      .label {
+        width: 120px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+      .value {
+        flex: 1;
+      }
+      .value input[type="text"],
+      .value input[type="email"] {
+        width: 90%;
+        padding: 10px 12px;
+        border-radius: 8px;
+        border: 1px solid #e6e6e6;
+        background: #fff;
+      }
+
+      .controls {
+        margin-top: 16px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .btn-ghost {
+        background: transparent;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        padding: 8px 12px;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+      .btn-primary {
+        background: var(--signup);
+        color: #fff;
+        padding: 10px 16px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        font-weight: 700;
+      }
+      .hidden {
+        display: none !important;
+      }
+      @media (max-width: 780px) {
+        .profile-top {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .avatar-wrap {
+          width: 120px;
+          margin: 0 auto;
+        }
+        .avatar {
+          width: 120px;
+          height: 120px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="container site-header">
+      <div class="brand">
+        <img class="logo" src="/images/logo.png" alt="Logo" />
+        <div style="font-weight: 700">Sustainable Shopping Helper</div>
+      </div>
+      <nav class="header-actions">
+        <a
+          class="pill"
+          href="/"
+          style="
+            background: transparent;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            color: #333;
+          "
+          >Home</a
+        >
+
+        <a
+          class="pill"
+          href="/src/pages/shopping-list.html"
+          style="
+            background: transparent;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            color: #333;
+          "
+          >My List</a
+        >
+        <a
+          class="pill"
+          href="/src/pages/profile.html"
+          style="
+            background: transparent;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            color: #333;
+          "
+          >Profile</a
+        >
+
+        <button
+          id="logoutBtnHeader"
+          class="pill"
+          style="
+            background: transparent;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            color: #333;
+          "
+        >
+          Logout
+        </button>
+      </nav>
+    </header>
+
+    <main class="profile-page">
+      <div class="profile-card">
+        <h3 style="margin-top: 0">Edit Profile</h3>
+
+        <div class="profile-top">
+          <div class="avatar-wrap">
+            <div id="avatar" class="avatar">
+              <svg
+                id="placeholderIcon"
+                width="64"
+                height="64"
+                viewBox="0 0 24 24"
+                fill="#bbb"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12zm0 2.2c-3.3 0-9.8 1.7-9.8 5v1.7h19.6V19.2c0-3.3-6.5-5-9.8-5z"
+                />
+              </svg>
+            </div>
+
+            <div id="photoUrlRow" style="margin-top: 10px">
+              <input
+                id="photoUrlInput"
+                type="text"
+                placeholder="Paste image URL to update avatar"
+                style="
+                  width: 85%;
+                  padding: 8px 10px;
+                  border-radius: 8px;
+                  border: 1px solid #e6e6e6;
+                "
+              />
+            </div>
+          </div>
+
+          <div class="meta">
+            <h2 id="displayName">Your name</h2>
+            <div style="display: flex; gap: 10px">
+              <button id="editBtn" class="btn-ghost">Edit</button>
+              <button id="saveBtn" class="btn-primary hidden">Save</button>
+              <button id="cancelBtn" class="btn-ghost hidden">Cancel</button>
+            </div>
+
+            <div style="margin-top: 14px">
+              <div class="field">
+                <div class="label">First Name</div>
+                <div class="value">
+                  <input id="firstName" type="text" readonly />
+                </div>
+              </div>
+
+              <div class="field">
+                <div class="label">Last Name</div>
+                <div class="value">
+                  <input id="lastName" type="text" readonly />
+                </div>
+              </div>
+
+              <div class="field">
+                <div class="label">Email</div>
+                <div class="value">
+                  <input id="email" type="email" readonly />
+                </div>
+              </div>
+
+              <div
+                id="feedback"
+                class="small-note"
+                style="color: crimson"
+              ></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="site-footer container" style="margin-top: 28px">
+      <div>About Us &nbsp;&nbsp; • &nbsp;&nbsp; Contact</div>
+      <div style="margin-top: 10px; color: var(--footer-gray)">
+        &copy; 2025 Sustainable Shopping Helper. All rights reserved.
+      </div>
+    </footer>
+
+    <script type="module">
+      // Profile page logic
+      import { auth, db } from "/src/firebase.js";
+      import { updateProfile } from "firebase/auth";
+      import { doc, setDoc, getDoc } from "firebase/firestore";
+      import { onAuthChange, logout } from "/src/authHelpers.js";
+
+      // DOM
+      const avatarEl = document.getElementById("avatar");
+      const placeholderIcon = document.getElementById("placeholderIcon");
+      const displayNameEl = document.getElementById("displayName");
+      const firstNameInput = document.getElementById("firstName");
+      const lastNameInput = document.getElementById("lastName");
+      const emailInput = document.getElementById("email");
+      const photoUrlInput = document.getElementById("photoUrlInput");
+
+      const editBtn = document.getElementById("editBtn");
+      const saveBtn = document.getElementById("saveBtn");
+      const cancelBtn = document.getElementById("cancelBtn");
+      const feedback = document.getElementById("feedback");
+
+      let currentUser = null;
+      let original = {};
+
+      function setAvatar(url) {
+        avatarEl.innerHTML = "";
+        if (url) {
+          const img = document.createElement("img");
+          img.src = url;
+          img.alt = "Avatar";
+          avatarEl.appendChild(img);
+        } else {
+          // show placeholder svg again
+          avatarEl.appendChild(placeholderIcon);
+        }
+      }
+
+      function splitName(displayName) {
+        if (!displayName) return { first: "", last: "" };
+        const parts = displayName.trim().split(/\s+/);
+        return { first: parts.shift() || "", last: parts.join(" ") || "" };
+      }
+
+      function enterEditMode() {
+        editBtn.classList.add("hidden");
+        saveBtn.classList.remove("hidden");
+        cancelBtn.classList.remove("hidden");
+        [firstNameInput, lastNameInput, photoUrlInput].forEach((i) =>
+          i.removeAttribute("readonly")
+        );
+      }
+      function exitEditMode() {
+        editBtn.classList.remove("hidden");
+        saveBtn.classList.add("hidden");
+        cancelBtn.classList.add("hidden");
+        [firstNameInput, lastNameInput, photoUrlInput].forEach((i) =>
+          i.setAttribute("readonly", "")
+        );
+      }
+
+      async function loadProfileFromFirestore(uid) {
+        try {
+          const ref = doc(db, "users", uid, "profile", "meta");
+          const snap = await getDoc(ref);
+          if (snap.exists()) {
+            const data = snap.data();
+
+            if (data.displayName) {
+              const parts = splitName(data.displayName);
+              firstNameInput.value = parts.first;
+              lastNameInput.value = parts.last;
+              displayNameEl.textContent = data.displayName;
+            }
+            if (data.photoURL) photoUrlInput.value = data.photoURL;
+          }
+        } catch (err) {
+          console.warn("profile load error", err);
+        }
+      }
+
+      // Save profile to both Auth and Firestore
+      async function saveProfile() {
+        feedback.textContent = "";
+        const first = firstNameInput.value.trim();
+        const last = lastNameInput.value.trim();
+        const newDisplayName = [first, last].filter(Boolean).join(" ").trim();
+        const newPhoto = photoUrlInput.value.trim() || null;
+
+        if (!currentUser) {
+          feedback.textContent = "Not signed in.";
+          return;
+        }
+
+        try {
+          // update Firebase Auth profile
+          await updateProfile(currentUser, {
+            displayName: newDisplayName || null,
+            photoURL: newPhoto || null,
+          });
+
+          const profileRef = doc(
+            db,
+            "users",
+            currentUser.uid,
+            "profile",
+            "meta"
+          );
+          await setDoc(
+            profileRef,
+            {
+              displayName: newDisplayName || "",
+              firstName: first || "",
+              lastName: last || "",
+              photoURL: newPhoto || "",
+              updatedAt: Date.now(),
+            },
+            { merge: true }
+          );
+
+          // update UI
+          displayNameEl.textContent = newDisplayName || "(No name)";
+          setAvatar(newPhoto);
+          original.displayName = newDisplayName;
+          original.photoURL = newPhoto;
+          feedback.style.color = "green";
+          feedback.textContent = "Saved.";
+          exitEditMode();
+
+          setTimeout(() => (feedback.textContent = ""), 2200);
+        } catch (err) {
+          console.error("save profile failed", err);
+          feedback.style.color = "crimson";
+          feedback.textContent = err?.message || "Failed to save profile";
+        }
+      }
+
+      // buttons
+      editBtn.addEventListener("click", () => {
+        enterEditMode();
+      });
+      cancelBtn.addEventListener("click", () => {
+        // restore
+        firstNameInput.value = original.firstName || "";
+        lastNameInput.value = original.lastName || "";
+        photoUrlInput.value = original.photoURL || "";
+        setAvatar(original.photoURL || "");
+        displayNameEl.textContent = original.displayName || "(No name)";
+        feedback.textContent = "";
+        exitEditMode();
+      });
+      saveBtn.addEventListener("click", saveProfile);
+
+      // populate fields
+      onAuthChange(async (user) => {
+        if (!user) {
+          // redirect visitor to homepage to sign in
+          window.location.href = "/";
+          return;
+        }
+        currentUser = user;
+
+        // fill from Auth
+        const dn = user.displayName || "";
+        const names = splitName(dn);
+        firstNameInput.value = names.first;
+        lastNameInput.value = names.last;
+        emailInput.value = user.email || "";
+        photoUrlInput.value = user.photoURL || "";
+
+        displayNameEl.textContent = dn || "(No name)";
+        setAvatar(user.photoURL || "");
+
+        // stash original for cancels
+        original = {
+          displayName: dn || "",
+          firstName: names.first || "",
+          lastName: names.last || "",
+          photoURL: user.photoURL || "",
+        };
+
+        await loadProfileFromFirestore(user.uid);
+
+        exitEditMode();
+      });
+      logoutBtnHeader?.addEventListener("click", async () => {
+        try {
+          await logout();
+          // after logout the onAuthChange listener will revert the UI
+        } catch (err) {
+          console.error("Logout failed", err);
+        }
+      });
+    </script>
+  </body>
+</html>

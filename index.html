@@ -1,30 +1,222 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
-    <meta charset="UTF-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Sustainable Shopping Helper</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap"
       rel="stylesheet"
     />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Shopping Helper</title>
+    <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
-    <nav>
-      <div class="navLeft">
-        <a href="#" id="logo">
-          <div class="logo"></div>
-          <div class="label">Sustainable Shopping Helper</div>
-        </a>
+    <header class="container site-header">
+      <div class="brand">
+        <img class="logo" src="/images/logo.png" alt="Logo" />
+        <div style="font-weight: 700">Sustainable Shopping Helper</div>
       </div>
-      <div class="links">
-        <a href="search.html" id="signup">Sign Up</a>
-        <a href="#" id="login">Login</a>
+
+      <!-- NOT AUTH: shown to visitors -->
+      <div class="header-actions not-auth-only" id="headerNotAuth">
+        <button id="ctaSignup" class="pill signup">Sign Up</button>
+        <button id="ctaLogin" class="pill login">Login</button>
       </div>
-    </nav>
-    <div id="app"></div>
-    <script type="module" src="/src/main.js"></script>
+
+      <!-- AUTH ONLY: shown when signed in -->
+      <nav class="header-actions auth-only hidden" id="headerAuth">
+        <a
+          class="pill"
+          href="/"
+          style="
+            background: transparent;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            color: #333;
+          "
+          >Home</a
+        >
+
+        <a
+          class="pill"
+          href="/src/pages/shopping-list.html"
+          style="
+            background: transparent;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            color: #333;
+          "
+          >My List</a
+        >
+        <a
+          class="pill"
+          href="/src/pages/profile.html"
+          style="
+            background: transparent;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            color: #333;
+          "
+          >Profile</a
+        >
+
+        <button
+          id="logoutBtnHeader"
+          class="pill"
+          style="
+            background: transparent;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            color: #333;
+          "
+        >
+          Logout
+        </button>
+      </nav>
+    </header>
+
+    <main class="container">
+      <section class="hero not-auth-only">
+        <h1>Shop Sustainably, Live Healthily</h1>
+        <p>
+          Make eco-friendly choices, find nutritional information, and create
+          personalized shopping lists.
+        </p>
+        <div style="margin-top: 18px" class="not-auth-only">
+          <button id="heroSignup" class="btn btn-primary">Sign Up</button>
+          <button id="heroLogin" class="btn btn-secondary">Login</button>
+        </div>
+      </section>
+
+      <div id="homeContainer" class="hidden" style="margin-top: 24px"></div>
+
+      <div id="authNotice" class="center" style="padding: 22px">
+        <small id="authMessage">Please sign in to view the full site.</small>
+      </div>
+    </main>
+
+    <footer class="site-footer container">
+      <div>About Us &nbsp;&nbsp; • &nbsp;&nbsp; Contact</div>
+      <div style="margin-top: 10px; color: var(--footer-gray)">
+        &copy; 2025 Sustainable Shopping Helper. All rights reserved.
+      </div>
+    </footer>
+
+    <script type="module">
+      import { onAuthChange, logout } from "/src/authHelpers.js";
+
+      // header and hero button wiring (visitor buttons)
+      document.getElementById("ctaSignup")?.addEventListener("click", () => {
+        window.location.href = "/src/pages/signup.html";
+      });
+      document.getElementById("ctaLogin")?.addEventListener("click", () => {
+        window.location.href = "/src/pages/login.html";
+      });
+      document.getElementById("heroSignup")?.addEventListener("click", () => {
+        window.location.href = "/src/pages/signup.html";
+      });
+      document.getElementById("heroLogin")?.addEventListener("click", () => {
+        window.location.href = "/src/pages/login.html";
+      });
+
+      // header auth nav buttons
+      const headerNotAuth = document.getElementById("headerNotAuth");
+      const headerAuth = document.getElementById("headerAuth");
+      const homeContainer = document.getElementById("homeContainer");
+      const authNotice = document.getElementById("authNotice");
+      const authMessage = document.getElementById("authMessage");
+      const logoutBtnHeader = document.getElementById("logoutBtnHeader");
+
+      // helper to show/hide node lists
+      function showNodes(selector, show) {
+        const nodes = document.querySelectorAll(selector);
+        nodes.forEach((n) => {
+          if (show) n.classList.remove("hidden");
+          else n.classList.add("hidden");
+        });
+      }
+
+      async function loadHomeContent() {
+        try {
+          const res = await fetch("/src/pages/home.html", {
+            cache: "no-store",
+          });
+          if (!res.ok) throw new Error("Failed to load home content");
+          const html = await res.text();
+
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(html, "text/html");
+
+          homeContainer.innerHTML = "";
+
+          Array.from(doc.body.childNodes).forEach((node) => {
+            if (node.tagName && node.tagName.toLowerCase() === "script") return;
+            homeContainer.appendChild(document.importNode(node, true));
+          });
+
+          const scripts = doc.querySelectorAll("script");
+          for (const s of scripts) {
+            if (s.src) {
+              const already = Array.from(document.scripts).some((existing) => {
+                try {
+                  return (
+                    existing.src &&
+                    new URL(existing.src, location.href).href ===
+                      new URL(s.src, location.href).href
+                  );
+                } catch (e) {
+                  return false;
+                }
+              });
+              if (already) continue;
+            }
+
+            const newScript = document.createElement("script");
+            newScript.type = s.type && s.type.length ? s.type : "module";
+
+            if (s.src) {
+              newScript.src = s.src;
+              newScript.async = false;
+              document.body.appendChild(newScript);
+            } else {
+              newScript.textContent = s.textContent;
+              document.body.appendChild(newScript);
+            }
+          }
+        } catch (err) {
+          console.error("Home load error:", err);
+        }
+      }
+
+      // auth state handling: show auth-only and hide not-auth-only when signed in
+      onAuthChange((user) => {
+        if (user) {
+          showNodes(".not-auth-only", false);
+
+          showNodes(".auth-only", true);
+
+          authNotice.style.display = "none";
+
+          homeContainer.classList.remove("hidden");
+          loadHomeContent();
+        } else {
+          showNodes(".not-auth-only", true);
+
+          showNodes(".auth-only", false);
+
+          homeContainer.classList.add("hidden");
+          authNotice.style.display = "block";
+          authMessage.textContent = "Please sign in to view the full site.";
+        }
+      });
+
+      // wire header logout button
+      logoutBtnHeader?.addEventListener("click", async () => {
+        try {
+          await logout();
+          // after logout the onAuthChange listener will revert the UI
+        } catch (err) {
+          console.error("Logout failed", err);
+        }
+      });
+    </script>
   </body>
 </html>

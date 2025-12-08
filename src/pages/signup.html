@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Sign Up — Sustainable Shopping</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <div class="auth-card">
+      <h2>Sign Up</h2>
+
+      <input id="firstName" type="text" placeholder="First Name" />
+      <input id="lastName" type="text" placeholder="Last Name" />
+      <input id="email" type="email" placeholder="Email" />
+      <input
+        id="password"
+        type="password"
+        placeholder="Password (min 6 chars)"
+      />
+
+      <div
+        style="
+          display: flex;
+          gap: 10px;
+          justify-content: center;
+          margin-top: 10px;
+        "
+      >
+        <button id="signupBtn" class="btn btn-primary">Sign Up</button>
+        <a
+          href="/"
+          class="btn btn-ghost"
+          style="
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+          "
+          >Cancel</a
+        >
+      </div>
+
+      <p style="margin-top: 14px">
+        Already have an account? <a href="/src/pages/login.html">Log in</a>
+      </p>
+      <div id="status" class="status"></div>
+    </div>
+
+    <script type="module">
+      import { signup, onAuthChange } from "/src/authHelpers.js";
+
+      const firstName = document.getElementById("firstName");
+      const lastName = document.getElementById("lastName");
+      const emailEl = document.getElementById("email");
+      const passEl = document.getElementById("password");
+      const btn = document.getElementById("signupBtn");
+      const status = document.getElementById("status");
+
+      btn.addEventListener("click", async () => {
+        status.textContent = "";
+        btn.disabled = true;
+        try {
+          await signup(
+            emailEl.value.trim(),
+            passEl.value,
+            firstName.value.trim(),
+            lastName.value.trim()
+          );
+          // success = auth listener below redirect
+        } catch (err) {
+          status.textContent = err.message;
+          btn.disabled = false;
+        }
+      });
+
+      onAuthChange((user) => {
+        if (user) window.location.href = "/";
+      });
+    </script>
+  </body>
+</html>

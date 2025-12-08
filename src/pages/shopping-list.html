@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>My Shopping List — Sustainable Shopping</title>
+    <link rel="stylesheet" href="/src/style.css" />
+    <style>
+      /* page-specific styles */
+      .note-preview {
+        background: #fff;
+        border-radius: 8px;
+        padding: 8px 10px;
+        color: #333;
+        margin-top: 8px;
+        font-size: 14px;
+        border: 1px solid #eee;
+      }
+      .note-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 6px;
+        align-items: center;
+      }
+      .note-editor textarea {
+        width: 100%;
+        min-height: 72px;
+        padding: 8px 10px;
+        border-radius: 8px;
+        border: 1px solid #e6e6e6;
+        resize: vertical;
+      }
+      .btn-note {
+        padding: 6px 10px;
+        border-radius: 8px;
+        cursor: pointer;
+        border: none;
+      }
+      .btn-note-save {
+        background: var(--signup);
+        color: #fff;
+        font-weight: 700;
+      }
+      .btn-note-cancel {
+        background: transparent;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+      }
+      .btn-note-delete {
+        background: #ff6b6b;
+        color: #fff;
+      }
+
+      .list-page {
+        max-width: 920px;
+        margin: 28px auto;
+        padding: 12px;
+      }
+      .list-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 18px;
+      }
+      .list-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 14px;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+      }
+      .list-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 12px;
+      }
+      .item-row {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        padding: 8px;
+        border-radius: 10px;
+        background: #f6f8f6;
+      }
+      .item-image {
+        width: 72px;
+        height: 72px;
+        flex: 0 0 72px;
+        border-radius: 8px;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+      .item-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .item-main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .item-title {
+        font-weight: 700;
+        font-size: 15px;
+      }
+      .item-meta {
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .item-actions {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .qty-control {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: #fff;
+        padding: 6px;
+        border-radius: 8px;
+      }
+      .qty-control input {
+        width: 56px;
+        padding: 6px 8px;
+        border-radius: 6px;
+        border: 1px solid #ddd;
+        text-align: center;
+      }
+      .btn-small {
+        padding: 8px 10px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+      }
+      .btn-danger {
+        background: #ff6b6b;
+        color: #fff;
+      }
+      .eco-pill {
+        padding: 6px 8px;
+        border-radius: 999px;
+        background: #27c427;
+        color: #fff;
+        font-weight: 700;
+        font-size: 12px;
+      }
+      .add-row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin-top: 12px;
+      }
+      .add-row input[type="text"] {
+        flex: 1;
+        padding: 10px 12px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+      }
+      .empty {
+        text-align: center;
+        color: var(--muted);
+        padding: 20px;
+      }
+      @media (max-width: 720px) {
+        .list-header {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 10px;
+        }
+        .item-row {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .item-image {
+          width: 100%;
+          height: 160px;
+        }
+        .qty-control {
+          justify-content: flex-start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="container site-header">
+      <div class="brand">
+        <img class="logo" src="/images/logo.png" alt="Logo" />
+        <div style="font-weight: 700">Sustainable Shopping Helper</div>
+      </div>
+      <nav class="header-actions">
+        <a
+          class="pill"
+          href="/"
+          style="
+            background: transparent;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            color: #333;
+          "
+          >Home</a
+        >
+
+        <a
+          class="pill"
+          href="/src/pages/shopping-list.html"
+          style="
+            background: transparent;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            color: #333;
+          "
+          >My List</a
+        >
+        <a
+          class="pill"
+          href="/src/pages/profile.html"
+          style="
+            background: transparent;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            color: #333;
+          "
+          >Profile</a
+        >
+
+        <button
+          id="logoutBtnHeader"
+          class="pill"
+          style="
+            background: transparent;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            color: #333;
+          "
+        >
+          Logout
+        </button>
+      </nav>
+    </header>
+
+    <main class="list-page">
+      <div class="list-header">
+        <div>
+          <h2 style="margin: 0 0 6px">My Shopping List</h2>
+          <div style="color: var(--muted)">
+            Manage your sustainable shopping choices and track your impact.
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 8px; align-items: center">
+          <a
+            class="pill"
+            href="/src/pages/search.html"
+            style="text-decoration: none"
+            >+ Add from Search</a
+          >
+        </div>
+      </div>
+
+      <div class="list-card">
+        <div class="add-row">
+          <input
+            id="barcodeInput"
+            type="text"
+            placeholder="Paste barcode (or product URL) to add"
+          />
+          <button
+            id="addByBarcodeBtn"
+            class="btn-small"
+            style="background: var(--signup); color: #fff"
+          >
+            Add
+          </button>
+        </div>
+
+        <div id="listContainer" class="list-grid" style="margin-top: 12px">
+          <div class="empty">Loading your list...</div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="site-footer container" style="margin-top: 28px">
+      <div>About Us &nbsp;&nbsp; • &nbsp;&nbsp; Contact</div>
+      <div style="margin-top: 10px; color: var(--footer-gray)">
+        &copy; 2025 Sustainable Shopping Helper. All rights reserved.
+      </div>
+    </footer>
+
+    <script type="module">
+      import { onAuthChange, logout } from "/src/authHelpers.js";
+      import { auth } from "/src/firebase.js";
+      import {
+        getUserList,
+        addProductToList,
+        updateListItem,
+        deleteListItem,
+      } from "/src/firestoreHelpers.js";
+      import { getProductByBarcode } from "/src/openFoodFactsApi.js";
+      import { doc, getDoc } from "firebase/firestore";
+      import { db } from "/src/firebase.js";
+
+      async function getListItem(uid, itemId) {
+        if (!uid || !itemId) return null;
+        const ref = doc(db, "users", uid, "shoppingList", itemId);
+        const snap = await getDoc(ref);
+        if (!snap.exists()) return null;
+        return { id: snap.id, ...snap.data() };
+      }
+      const listContainer = document.getElementById("listContainer");
+      const barcodeInput = document.getElementById("barcodeInput");
+      const addByBarcodeBtn = document.getElementById("addByBarcodeBtn");
+
+      let currentUid = null;
+      let itemsCache = []; // local cache of current items
+
+      // helper to extract barcode from URL or raw barcode
+      function extractBarcode(input) {
+        if (!input) return "";
+        const s = String(input).trim();
+        try {
+          const u = new URL(s);
+          // example: https://world.openfoodfacts.org/product/737628064502
+          const parts = u.pathname.split("/").filter(Boolean);
+
+          for (let i = parts.length - 1; i >= 0; i--) {
+            const part = parts[i];
+            if (/^\d+$/.test(part)) return part;
+          }
+
+          return parts[parts.length - 1] || "";
+        } catch (e) {
+          const digits = s.match(/\d{6,}/);
+          return digits ? digits[0] : s;
+        }
+      }
+
+      // render full list
+      function renderList(items) {
+        itemsCache = items || [];
+        listContainer.innerHTML = "";
+        if (!items || items.length === 0) {
+          listContainer.innerHTML =
+            '<div class="empty">Your shopping list is empty. Add items from search or paste a barcode above.</div>';
+          return;
+        }
+
+        items.forEach((it) => {
+          const row = document.createElement("div");
+          row.className = "item-row";
+
+          const imgWrap = document.createElement("div");
+          imgWrap.className = "item-image";
+          const img = document.createElement("img");
+          img.src = it.image || "/images/logo.png";
+          img.alt = it.product_name || "Item";
+          imgWrap.appendChild(img);
+
+          const main = document.createElement("div");
+          main.className = "item-main";
+          const title = document.createElement("div");
+          title.className = "item-title";
+          title.textContent = it.product_name || it.name || "Unnamed item";
+          main.appendChild(title);
+
+          if (it.brands) {
+            const meta = document.createElement("div");
+            meta.className = "item-meta";
+            meta.textContent = it.brands;
+            main.appendChild(meta);
+          }
+
+          // small nutriment summary if available
+          if (it.nutriments) {
+            const mini = document.createElement("div");
+            mini.className = "item-meta";
+            const energy =
+              it.nutriments["energy-kcal_100g"] ||
+              it.nutriments["energy-kcal"] ||
+              it.nutriments.energy;
+            const sugars =
+              it.nutriments["sugars_100g"] || it.nutriments["sugars"];
+            mini.textContent =
+              (energy ? `${Math.round(energy)} kcal` : "") +
+              (sugars ? ` • ${sugars}g sugars` : "");
+            if (mini.textContent) main.appendChild(mini);
+          }
+
+          // NOTE UI: preview, editor, actions
+          const notePreview = document.createElement("div");
+          notePreview.className = "note-preview";
+          notePreview.style.display = it.note ? "" : "none";
+          notePreview.textContent = it.note || "";
+
+          const noteActions = document.createElement("div");
+          noteActions.className = "note-actions";
+
+          const editNoteBtn = document.createElement("button");
+          editNoteBtn.className = "btn-note";
+          editNoteBtn.textContent = it.note ? "Edit Note" : "Add Note";
+
+          const deleteNoteBtn = document.createElement("button");
+          deleteNoteBtn.className = "btn-note btn-note-delete";
+          deleteNoteBtn.textContent = "Delete Note";
+          deleteNoteBtn.style.display = it.note ? "" : "none";
+
+          noteActions.appendChild(editNoteBtn);
+          noteActions.appendChild(deleteNoteBtn);
+
+          // hidden editor area
+          const noteEditorWrap = document.createElement("div");
+          noteEditorWrap.className = "note-editor";
+          noteEditorWrap.style.display = "none";
+          noteEditorWrap.innerHTML = `
+    <textarea placeholder="Add a note for this item..."></textarea>
+    <div style="margin-top:8px; display:flex; gap:8px;">
+      <button class="btn-note btn-note-save">Save Note</button>
+      <button class="btn-note btn-note-cancel">Cancel</button>
+    </div>
+  `;
+
+          // wire note buttons
+          const textarea = noteEditorWrap.querySelector("textarea");
+          const saveNoteBtn = noteEditorWrap.querySelector(".btn-note-save");
+          const cancelNoteBtn =
+            noteEditorWrap.querySelector(".btn-note-cancel");
+
+          // initialize textarea content
+          textarea.value = it.note || "";
+
+          editNoteBtn.addEventListener("click", () => {
+            // open editor
+            noteEditorWrap.style.display = "";
+            notePreview.style.display = "none";
+            editNoteBtn.style.display = "none";
+            deleteNoteBtn.style.display = "none";
+            textarea.focus();
+          });
+
+          cancelNoteBtn.addEventListener("click", () => {
+            textarea.value = it.note || "";
+            noteEditorWrap.style.display = "none";
+            notePreview.style.display = it.note ? "" : "none";
+            editNoteBtn.style.display = "";
+            deleteNoteBtn.style.display = it.note ? "" : "none";
+          });
+
+          saveNoteBtn.addEventListener("click", async () => {
+            if (!currentUid) return alert("Sign in to add notes.");
+            const newNote = textarea.value.trim();
+            saveNoteBtn.disabled = true;
+            try {
+              console.log("Attempting to save note", {
+                uid: currentUid,
+                itemId: it.id,
+                note: newNote,
+              });
+              await updateListItem(currentUid, it.id, {
+                note: newNote || null,
+              });
+
+              const refreshed = await getListItem(currentUid, it.id);
+              console.log("Doc after write:", refreshed);
+              if (!refreshed) {
+                throw new Error("Document not found after write");
+              }
+
+              const idx = itemsCache.findIndex((x) => x.id === it.id);
+              if (idx >= 0) itemsCache[idx].note = refreshed.note || "";
+              notePreview.textContent = refreshed.note || "";
+              notePreview.style.display = refreshed.note ? "" : "none";
+              deleteNoteBtn.style.display = refreshed.note ? "" : "none";
+              noteEditorWrap.style.display = "none";
+              editNoteBtn.style.display = "";
+            } catch (err) {
+              console.error("save note failed", err);
+              alert("Failed to save note: " + (err.message || err));
+            } finally {
+              saveNoteBtn.disabled = false;
+            }
+          });
+
+          deleteNoteBtn.addEventListener("click", async () => {
+            if (!currentUid) return alert("Sign in to delete notes.");
+            if (!confirm("Delete this note?")) return;
+            try {
+              await updateListItem(currentUid, it.id, { note: null });
+              const idx = itemsCache.findIndex((x) => x.id === it.id);
+              if (idx >= 0) itemsCache[idx].note = "";
+              notePreview.textContent = "";
+              notePreview.style.display = "none";
+              deleteNoteBtn.style.display = "none";
+            } catch (err) {
+              console.error("delete note failed", err);
+              alert("Failed to delete note.");
+            }
+          });
+
+          // existing actions block (qty control and delete)
+          const actions = document.createElement("div");
+          actions.className = "item-actions";
+
+          // qty control
+          const qtyCtl = document.createElement("div");
+          qtyCtl.className = "qty-control";
+          const minus = document.createElement("button");
+          minus.textContent = "-";
+          minus.className = "btn-small";
+          const qtyInput = document.createElement("input");
+          qtyInput.type = "number";
+          qtyInput.min = "0";
+          qtyInput.value = it.quantity || 1;
+          qtyInput.dataset.itemId = it.id;
+          const plus = document.createElement("button");
+          plus.textContent = "+";
+          plus.className = "btn-small";
+
+          qtyCtl.appendChild(minus);
+          qtyCtl.appendChild(qtyInput);
+          qtyCtl.appendChild(plus);
+
+          // delete item
+          const delBtn = document.createElement("button");
+          delBtn.className = "btn-small btn-danger";
+          delBtn.textContent = "Delete";
+
+          // ecoscore pill if present
+          if (it.ecoscore) {
+            const eco = document.createElement("div");
+            eco.className = "eco-pill";
+            eco.textContent = `Eco: ${String(it.ecoscore).toUpperCase()}`;
+            eco.style.marginLeft = "8px";
+            eco.style.flexShrink = "0";
+            actions.appendChild(eco);
+          }
+
+          actions.appendChild(qtyCtl);
+          actions.appendChild(delBtn);
+
+          // wire qty plus/minus + change event
+          const debMap = renderList.debMap || (renderList.debMap = new Map());
+          plus.addEventListener("click", () => {
+            const n = Number(qtyInput.value || 0) + 1;
+            qtyInput.value = n;
+            scheduleQtyUpdate(qtyInput.dataset.itemId, n);
+          });
+          minus.addEventListener("click", () => {
+            const n = Math.max(0, Number(qtyInput.value || 0) - 1);
+            qtyInput.value = n;
+            scheduleQtyUpdate(qtyInput.dataset.itemId, n);
+          });
+          qtyInput.addEventListener("change", (e) => {
+            const val = Number(e.target.value || 0);
+            scheduleQtyUpdate(e.target.dataset.itemId, val);
+          });
+
+          delBtn.addEventListener("click", async () => {
+            if (!currentUid) return alert("Sign in to delete items.");
+            if (!confirm("Delete this item from your list?")) return;
+            try {
+              await deleteListItem(currentUid, it.id);
+              const next = itemsCache.filter((x) => x.id !== it.id);
+              renderList(next);
+            } catch (err) {
+              console.error("delete failed", err);
+              alert("Failed to delete item");
+            }
+          });
+
+          // append everything into main
+          main.appendChild(notePreview);
+          main.appendChild(noteActions);
+          main.appendChild(noteEditorWrap);
+
+          row.appendChild(imgWrap);
+          row.appendChild(main);
+          row.appendChild(actions);
+
+          listContainer.appendChild(row);
+
+          function scheduleQtyUpdate(itemId, qty) {
+            if (!currentUid) return;
+            const existing = debMap.get(itemId);
+            if (existing) clearTimeout(existing);
+            const t = setTimeout(async () => {
+              try {
+                await updateListItem(currentUid, itemId, { quantity: qty });
+                const idx = itemsCache.findIndex((x) => x.id === itemId);
+                if (idx >= 0) itemsCache[idx].quantity = qty;
+              } catch (err) {
+                console.error("qty update failed", err);
+                alert("Failed to update quantity");
+              } finally {
+                debMap.delete(itemId);
+              }
+            }, 500);
+            debMap.set(itemId, t);
+          }
+        });
+      }
+
+      // fetch and show list for uid
+      async function loadListForUser(uid) {
+        listContainer.innerHTML =
+          '<div class="empty">Loading your list...</div>';
+        try {
+          const items = await getUserList(uid);
+          // Ensure each item has .id and normalized fields
+          const normalized = (items || []).map((it) => ({
+            id: it.id,
+            product_name: it.product_name || it.name || it.title || "",
+            brands: it.brands || "",
+            image:
+              it.image ||
+              it.image_front_small_url ||
+              it.image_front_url ||
+              it.image_url ||
+              "/images/logo.png",
+            quantity: it.quantity || 1,
+            nutriments: it.nutriments || {},
+            ecoscore:
+              it.ecoscore || (it.ecoscore_grade ? it.ecoscore_grade : null),
+            note: it.note === undefined || it.note === null ? "" : it.note, // preserve empty string rather than undefined
+          }));
+
+          renderList(normalized);
+        } catch (err) {
+          console.error("load list failed", err);
+          listContainer.innerHTML =
+            '<div class="empty">Failed to load list.</div>';
+        }
+      }
+
+      // add-by-barcode handler
+      addByBarcodeBtn.addEventListener("click", async () => {
+        const raw = barcodeInput.value.trim();
+        if (!raw) return;
+        const code = extractBarcode(raw);
+        if (!code) return alert("Enter a barcode or valid product URL");
+        if (!currentUid) return alert("Please sign in to add items");
+
+        addByBarcodeBtn.disabled = true;
+        addByBarcodeBtn.textContent = "Adding...";
+        try {
+          const product = await getProductByBarcode(code);
+          if (!product) {
+            alert("Product not found");
+            return;
+          }
+          const productData = {
+            code: product.code,
+            product_name: product.product_name || product.generic_name || "",
+            brands: product.brands || "",
+            image:
+              product.image_front_small_url ||
+              product.image_front_url ||
+              product.image_url ||
+              "",
+            ecoscore: product.ecoscore_grade || product.ecoscore_score || null,
+            nutriments: product.nutriments || {},
+            quantity: 1,
+          };
+          const docId = await addProductToList(currentUid, productData);
+          // add to UI
+          const newItem = { id: docId, ...productData };
+          itemsCache.unshift(newItem);
+          renderList(itemsCache);
+          barcodeInput.value = "";
+        } catch (err) {
+          console.error("add by barcode failed", err);
+          alert("Failed to add product: " + (err.message || err));
+        } finally {
+          addByBarcodeBtn.disabled = false;
+          addByBarcodeBtn.textContent = "Add";
+        }
+      });
+
+      // Auth state: fetch list when user signs in, redirect to homepage if not signed in
+      onAuthChange((user) => {
+        if (user) {
+          currentUid = user.uid;
+          loadListForUser(currentUid);
+        } else {
+          currentUid = null;
+          // redirect to public homepage to sign in
+          window.location.href = "/";
+        }
+      });
+      logoutBtnHeader?.addEventListener("click", async () => {
+        try {
+          await logout();
+          // after logout the onAuthChange listener will revert the UI
+        } catch (err) {
+          console.error("Logout failed", err);
+        }
+      });
+    </script>
+  </body>
+</html>

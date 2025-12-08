@@ -1,4 +1,4 @@
-import { db } from './firebase';
+import { db } from "./firebase";
 import {
   collection,
   addDoc,
@@ -9,7 +9,7 @@ import {
   deleteDoc,
   query,
   where,
-  getDocs
+  getDocs,
 } from "firebase/firestore";
 
 /**
@@ -18,27 +18,35 @@ import {
  * @param {object} productData - product object to store
  */
 export async function addProductToList(uid, productData) {
-  const col = collection(db, 'users', uid, 'shoppingList');
+  const col = collection(db, "users", uid, "shoppingList");
   const docRef = await addDoc(col, {
     ...productData,
-    addedAt: Date.now()
+    addedAt: Date.now(),
   });
   return docRef.id;
 }
 
 /**
- * Update an item (notes, quantity, etc.)
+ * Update an item
  */
+
 export async function updateListItem(uid, itemId, updates) {
-  const ref = doc(db, 'users', uid, 'shoppingList', itemId);
-  await updateDoc(ref, updates);
+  if (!uid || !itemId) throw new Error("updateListItem: missing uid or itemId");
+  const ref = doc(db, "users", uid, "shoppingList", itemId);
+  try {
+    await setDoc(ref, updates, { merge: true });
+    return true;
+  } catch (err) {
+    console.error("updateListItem failed", err);
+    throw err;
+  }
 }
 
 /**
  * Delete an item
  */
 export async function deleteListItem(uid, itemId) {
-  const ref = doc(db, 'users', uid, 'shoppingList', itemId);
+  const ref = doc(db, "users", uid, "shoppingList", itemId);
   await deleteDoc(ref);
 }
 
@@ -46,7 +54,7 @@ export async function deleteListItem(uid, itemId) {
  * Get all shopping list items for the user
  */
 export async function getUserList(uid) {
-  const col = collection(db, 'users', uid, 'shoppingList');
+  const col = collection(db, "users", uid, "shoppingList");
   const snapshot = await getDocs(col);
-  return snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+  return snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
 }
